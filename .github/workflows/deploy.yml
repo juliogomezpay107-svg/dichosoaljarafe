@@ -28,31 +28,11 @@ jobs:
 
       - name: Enable GitHub Pages via API
         run: |
-          echo "Attempting to enable GitHub Pages..."
-          HTTP_CODE=$(curl -s -o /tmp/pages-response.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pages" \
-            -H "Content-Type: application/json" \
-            -d '{"source":{"branch":"gh-pages","path":"/"}}')
-          echo "HTTP code: $HTTP_CODE"
-          cat /tmp/pages-response.json
-          echo ""
-          if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "204" ]; then
-            echo "Pages enabled successfully!"
-          elif [ "$HTTP_CODE" = "409" ]; then
-            echo "Pages already exists, trying PUT to update..."
-            HTTP_CODE2=$(curl -s -o /tmp/pages-update.json -w "%{http_code}" \
-              -X PUT \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pages" \
-              -H "Content-Type: application/json" \
-              -d '{"source":{"branch":"gh-pages","path":"/"}}')
-            echo "PUT HTTP code: $HTTP_CODE2"
-            cat /tmp/pages-update.json
-          else
-            echo "Failed to enable Pages"
-            exit 1
-          fi
+          echo '{"source":{"branch":"gh-pages","path":"/"}}' | \
+          gh api --method POST /repos/${{ github.repository }}/pages \
+            --input - --jq '.html_url' && echo "OK" || \
+          echo '{"source":{"branch":"gh-pages","path":"/"}}' | \
+          gh api --method PUT /repos/${{ github.repository }}/pages \
+            --input - --jq '.html_url'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
