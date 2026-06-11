@@ -174,21 +174,11 @@ function About() {
 }
 
 function Menu() {
-  const [visible, setVisible] = useState(false);
   const [category, setCategory] = useState(MENU_CATEGORIES[0].key);
-  const ref = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold: 0.1 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
   const current = MENU_CATEGORIES.find((c) => c.key === category)!;
 
   return (
-    <section className="section" id="carta" ref={ref}>
+    <section className="section" id="carta">
       <div className="container">
         <p className="section-eyebrow">Nuestra carta</p>
         <h2 className="section-title">Descubre nuestros platos</h2>
@@ -203,9 +193,9 @@ function Menu() {
             </button>
           ))}
         </div>
-        <div className="menu-list fade-up" key={category}>
-          {current.dishes.map((d) => (
-            <div key={d.name} className="menu-item">
+        <div className="menu-list" key={category}>
+          {current.dishes.map((d, i) => (
+            <div key={d.name} className="menu-item" style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="menu-item-header">
                 <span className="menu-item-name">{d.name}</span>
                 <span className="menu-item-dots"></span>
