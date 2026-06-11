@@ -22,30 +22,30 @@ const MENU_CATEGORIES = [
     key: "entrantes",
     label: "Entrantes",
     dishes: [
-      { name: "Croquetas caseras", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro." },
-      { name: "Tartar de atún", desc: "Con aguacate, sésamo y emulsión de soja." },
+      { name: "Croquetas caseras", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro.", price: "9€" },
+      { name: "Tartar de atún", desc: "Con aguacate, sésamo y emulsión de soja.", price: "14€" },
     ],
   },
   {
     key: "principales",
     label: "Principales",
     dishes: [
-      { name: "Steak tartar en tuétano", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa." },
-      { name: "Sándwich de cecina", desc: "Cecina de primera, queso fundido y alioli de trufa." },
+      { name: "Steak tartar en tuétano", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa.", price: "18€" },
+      { name: "Sándwich de cecina", desc: "Cecina de primera, queso fundido y alioli de trufa.", price: "12€" },
     ],
   },
   {
     key: "arroces",
     label: "Arroces",
     dishes: [
-      { name: "Arroz del día", desc: "Elaborado al momento con caldo casero. Siempre en su punto." },
+      { name: "Arroz del día", desc: "Elaborado al momento con caldo casero. Siempre en su punto.", price: "16€" },
     ],
   },
   {
     key: "postres",
     label: "Postres",
     dishes: [
-      { name: "Tarta de queso", desc: "Con base de galleta y coulis de frutos rojos." },
+      { name: "Tarta de queso", desc: "Con base de galleta y coulis de frutos rojos.", price: "7€" },
     ],
   },
 ];
@@ -207,7 +207,9 @@ function Menu() {
           {current.dishes.map((d) => (
             <div key={d.name} className="menu-item">
               <div className="menu-item-header">
-                <h3 className="menu-item-name">{d.name}</h3>
+                <span className="menu-item-name">{d.name}</span>
+                <span className="menu-item-dots"></span>
+                <span className="menu-item-price">{d.price}</span>
               </div>
               <p className="menu-item-desc">{d.desc}</p>
             </div>
