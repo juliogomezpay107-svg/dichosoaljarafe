@@ -194,6 +194,32 @@
 .feature-desc  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
 /* ── Dishes ──────────────────────────────────── */
+.menu-tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+.menu-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.6rem 1.5rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.menu-tab:hover { border-color: var(--gold); color: var(--cream); }
+.menu-tab.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1c1c1c;
+  font-weight: 600;
+}
 .dishes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
