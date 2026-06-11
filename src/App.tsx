@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 /* ── Data ──────────────────────────────────────── */
@@ -17,10 +18,19 @@ const FEATURES = [
 ];
 
 const DISHES = [
-  { name: "Steak tartar en tuétano", tag: "Recomendado", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa." },
-  { name: "Croquetas caseras", tag: "Casero", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro." },
-  { name: "Arroces", tag: "Especialidad", desc: "Elaborados al momento con caldo casero. Siempre en su punto." },
-  { name: "Sándwich de cecina", tag: "Popular", desc: "Cecina de primera, queso fundido y alioli de trufa." },
+  { name: "Steak tartar en tuétano", tag: "Recomendado", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa.", image: "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&h=400&fit=crop" },
+  { name: "Croquetas caseras", tag: "Casero", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro.", image: "https://images.unsplash.com/photo-1625943553852-781c6dd46faa?w=600&h=400&fit=crop" },
+  { name: "Arroces", tag: "Especialidad", desc: "Elaborados al momento con caldo casero. Siempre en su punto.", image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&h=400&fit=crop" },
+  { name: "Sándwich de cecina", tag: "Popular", desc: "Cecina de primera, queso fundido y alioli de trufa.", image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&h=400&fit=crop" },
+];
+
+const GALLERY = [
+  { src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop", alt: "Interior del restaurante" },
+  { src: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop", alt: "Ambiente del restaurante" },
+  { src: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&h=600&fit=crop", alt: "Cocina abierta" },
+  { src: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=600&fit=crop", alt: "Plato estrella" },
+  { src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop", alt: "Decoración de plato" },
+  { src: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=600&fit=crop", alt: "Comida y copas" },
 ];
 
 const REVIEWS = [
@@ -56,19 +66,22 @@ function Navbar() {
 }
 
 function Hero() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => { setVisible(true); }, []);
+
   return (
     <section className="hero" id="hero">
       <div className="hero-overlay" />
       <div className="hero-content">
-        <p className="hero-eyebrow fade-up">Mairena del Aljarafe · Sevilla</p>
-        <h1 className="hero-title fade-up delay-1">
+        <p className={`hero-eyebrow fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: "0.2s" }}>Mairena del Aljarafe · Sevilla</p>
+        <h1 className={`hero-title fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: "0.4s" }}>
           Sabores que<br />
           <em>sorprenden</em>
         </h1>
-        <p className="hero-subtitle fade-up delay-2">
+        <p className={`hero-subtitle fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: "0.6s" }}>
           Cocina contemporánea, producto cuidado y una experiencia gastronómica diferente.
         </p>
-        <div className="hero-actions fade-up delay-3">
+        <div className={`hero-actions fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: "0.8s" }}>
           <button
             className="btn btn-outline"
             onClick={() => document.getElementById("carta")?.scrollIntoView({ behavior: "smooth" })}
@@ -135,23 +148,60 @@ function About() {
 }
 
 function Menu() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <section className="section" id="carta">
+    <section className="section" id="carta" ref={ref}>
       <div className="container">
         <p className="section-eyebrow">Los imprescindibles</p>
         <h2 className="section-title">Platos estrella</h2>
         <div className="dishes-grid">
           {DISHES.map((d, i) => (
-            <div key={d.name} className="dish-card">
-              <span className="dish-number">0{i + 1}</span>
-              <div>
-                <span className="dish-tag">{d.tag}</span>
+            <div key={d.name} className={`dish-card fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: `${i * 0.1}s` }}>
+              <div className="dish-image-wrapper">
+                <img src={d.image} alt={d.name} className="dish-image" loading="lazy" />
+                <span className="dish-tag-img">{d.tag}</span>
+              </div>
+              <div className="dish-body">
                 <h3 className="dish-name">{d.name}</h3>
                 <p className="dish-desc">{d.desc}</p>
               </div>
-              <div className="dish-footer">
-                <span className="dish-price">—</span>
-              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Gallery() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section className="section" id="galeria" ref={ref}>
+      <div className="container">
+        <p className="section-eyebrow">Galería</p>
+        <h2 className="section-title">Ambiente y cocina</h2>
+        <div className="gallery-grid">
+          {GALLERY.map((img, i) => (
+            <div key={i} className={`gallery-item fade-up ${visible ? "visible" : ""}`} style={{ transitionDelay: `${i * 0.08}s` }}>
+              <img src={img.src} alt={img.alt} loading="lazy" className="gallery-img" />
             </div>
           ))}
         </div>
@@ -333,6 +383,7 @@ export default function App() {
         <Hero />
         <About />
         <Menu />
+        <Gallery />
         <Reviews />
         <Reservation />
         <Location />
