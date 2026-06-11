@@ -266,6 +266,36 @@
 .dish-name   { font-family: "Playfair Display", serif; font-size: 1.25rem; color: var(--cream); }
 .dish-desc   { font-size: 0.85rem; color: var(--muted); line-height: 1.7; flex: 1; }
 
+/* ── Menu list (text only) ──────────────────── */
+.menu-list {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.menu-item {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.25rem;
+}
+.menu-item:last-child { border-bottom: none; padding-bottom: 0; }
+.menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.3rem;
+}
+.menu-item-name {
+  font-family: "Playfair Display", serif;
+  font-size: 1.15rem;
+  color: var(--cream);
+}
+.menu-item-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
 /* ── Reviews ─────────────────────────────────── */
 .reviews-header {
   display: flex;

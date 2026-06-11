@@ -22,30 +22,30 @@ const MENU_CATEGORIES = [
     key: "entrantes",
     label: "Entrantes",
     dishes: [
-      { name: "Croquetas caseras", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro.", image: "https://images.unsplash.com/photo-1625943553852-781c6dd46faa?w=600&h=400&fit=crop" },
-      { name: "Tartar de atún", desc: "Con aguacate, sésamo y emulsión de soja.", image: "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=600&h=400&fit=crop" },
+      { name: "Croquetas caseras", desc: "De setas y de jamón ibérico. Rebozado perfecto, cremosas por dentro." },
+      { name: "Tartar de atún", desc: "Con aguacate, sésamo y emulsión de soja." },
     ],
   },
   {
     key: "principales",
     label: "Principales",
     dishes: [
-      { name: "Steak tartar en tuétano", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa.", image: "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&h=400&fit=crop" },
-      { name: "Sándwich de cecina", desc: "Cecina de primera, queso fundido y alioli de trufa.", image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&h=400&fit=crop" },
+      { name: "Steak tartar en tuétano", desc: "Nuestro plato más aclamado. Carne de primera con tuétano a la brasa." },
+      { name: "Sándwich de cecina", desc: "Cecina de primera, queso fundido y alioli de trufa." },
     ],
   },
   {
     key: "arroces",
     label: "Arroces",
     dishes: [
-      { name: "Arroz del día", desc: "Elaborado al momento con caldo casero. Siempre en su punto.", image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&h=400&fit=crop" },
+      { name: "Arroz del día", desc: "Elaborado al momento con caldo casero. Siempre en su punto." },
     ],
   },
   {
     key: "postres",
     label: "Postres",
     dishes: [
-      { name: "Tarta de queso", desc: "Con base de galleta y coulis de frutos rojos.", image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&h=400&fit=crop" },
+      { name: "Tarta de queso", desc: "Con base de galleta y coulis de frutos rojos." },
     ],
   },
 ];
@@ -203,16 +203,13 @@ function Menu() {
             </button>
           ))}
         </div>
-        <div className="dishes-grid fade-up" key={category}>
+        <div className="menu-list fade-up" key={category}>
           {current.dishes.map((d) => (
-            <div key={d.name} className={`dish-card ${visible ? "visible" : ""}`}>
-              <div className="dish-image-wrapper">
-                <img src={d.image} alt={d.name} className="dish-image" loading="lazy" />
+            <div key={d.name} className="menu-item">
+              <div className="menu-item-header">
+                <h3 className="menu-item-name">{d.name}</h3>
               </div>
-              <div className="dish-body">
-                <h3 className="dish-name">{d.name}</h3>
-                <p className="dish-desc">{d.desc}</p>
-              </div>
+              <p className="menu-item-desc">{d.desc}</p>
             </div>
           ))}
         </div>
