@@ -431,6 +431,20 @@
   opacity: 1;
   transform: translateY(0);
 }
+.slide-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.slide-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.slide-left.visible, .slide-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
 .bounce {
   animation: bounce 2s ease-in-out infinite;
 }
