@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "REEMPLAZA_CON_TU_API_KEY",
-  authDomain: "REEMPLAZA_CON_TU_AUTH_DOMAIN",
-  projectId: "REEMPLAZA_CON_TU_PROJECT_ID",
-  storageBucket: "REEMPLAZA_CON_TU_STORAGE_BUCKET",
-  messagingSenderId: "REEMPLAZA_CON_TU_MESSAGING_SENDER_ID",
-  appId: "REEMPLAZA_CON_TU_APP_ID",
+  apiKey: "AIzaSyD2qwlIiERWCiaf_nDvTZgqkpH4fYkyvVM",
+  authDomain: "dichoso-c92d7.firebaseapp.com",
+  projectId: "dichoso-c92d7",
+  storageBucket: "dichoso-c92d7.firebasestorage.app",
+  messagingSenderId: "691336146160",
+  appId: "1:691336146160:web:3f2586be82cd9d0d476635",
 };
 
 const app = initializeApp(firebaseConfig);
