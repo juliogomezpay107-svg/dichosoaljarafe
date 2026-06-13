@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+import { db } from "./firebase";
+import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
 
 /* ── Data ──────────────────────────────────────── */
 const PHONE = "664243280";
@@ -297,27 +299,36 @@ function Reservation() {
   const [persons, setPersons] = useState("");
   const [note, setNote] = useState("");
   const [done, setDone] = useState(false);
+  const [booked, setBooked] = useState<string[]>([]);
+  const [sending, setSending] = useState(false);
 
-  const [booked, setBooked] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem("dichoso_bookings") || "[]"); }
-    catch { return []; }
-  });
+  useEffect(() => {
+    if (!date) { setBooked([]); return; }
+    const q = query(collection(db, "bookings"), where("date", "==", date));
+    const unsub = onSnapshot(q, (snap) => {
+      setBooked(snap.docs.map((d) => d.data().time));
+    });
+    return unsub;
+  }, [date]);
 
-  const isBooked = (t: string) => booked.includes(`${date}|${t}`);
+  const isBooked = (t: string) => booked.includes(t);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const key = `${date}|${time}`;
-    if (booked.includes(key)) return;
-    const updated = [...booked, key];
-    setBooked(updated);
-    localStorage.setItem("dichoso_bookings", JSON.stringify(updated));
+    if (booked.includes(time)) return;
+    setSending(true);
+
+    await addDoc(collection(db, "bookings"), {
+      date, time, name, phone, persons, note,
+      createdAt: new Date().toISOString(),
+    });
 
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     const waNumber = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
     const text = `🍽️ Reserva confirmada en Dichoso\n\n${name}, su mesa está lista:\n📅 ${date}\n⏰ ${time}\n👥 ${persons} personas${note ? `\n📝 ${note}` : ""}\n\n📍 Av. de los Descubrimientos, 11, Mairena\n📞 664 24 32 80\n\n¡Gracias por confiar en nosotros!`;
-    window.location.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
 
+    setSending(false);
     setDone(true);
   };
 
@@ -361,8 +372,7 @@ function Reservation() {
                 {times.map((g) => (
                   <optgroup key={g.group} label={g.group}>
                     {g.slots.map((t) => {
-                      const taken = !!date && isBooked(t);
-                      if (taken) return null;
+                      if (isBooked(t)) return null;
                       return <option key={t} value={t}>{t}</option>;
                     })}
                   </optgroup>
@@ -394,8 +404,8 @@ function Reservation() {
             <textarea className="form-input form-textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Alergias, celebraciones, preferencias..." />
           </div>
           <div className="form-actions">
-            <button type="submit" className={`btn btn-lg ${time && isBooked(time) ? "btn-disabled" : "btn-gold"}`} disabled={!date || !time || !name || !phone || !persons || isBooked(time)}>
-              {time && isBooked(time) ? "No disponible" : "Confirmar reserva"}
+            <button type="submit" className={`btn btn-lg ${time && isBooked(time) ? "btn-disabled" : "btn-gold"}`} disabled={!date || !time || !name || !phone || !persons || isBooked(time) || sending}>
+              {sending ? "Reservando..." : (time && isBooked(time) ? "No disponible" : "Confirmar reserva")}
             </button>
             <a href={`tel:+34${PHONE}`} className="btn btn-outline btn-lg">
               Llamar · 664 24 32 80
