@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { db } from "./firebase";
-import { collection, doc, setDoc, onSnapshot, query, where, runTransaction } from "firebase/firestore";
+import { supabase } from "./supabase";
 
 /* ── Data ──────────────────────────────────────── */
 const PHONE = "664243280";
@@ -305,11 +304,17 @@ function Reservation() {
 
   useEffect(() => {
     if (!date) { setBooked([]); return; }
-    const q = query(collection(db, "slots"), where("date", "==", date));
-    const unsub = onSnapshot(q, (snap) => {
-      setBooked(snap.docs.map((d) => d.data().time));
+    supabase
+      .channel("slots-" + date)
+      .on("postgres_changes", { event: "*", schema: "public", table: "slots", filter: `date=eq.${date}` }, () => {
+        supabase.from("slots").select("time").eq("date", date).then(({ data }) => {
+          setBooked((data || []).map((r) => r.time));
+        });
+      })
+      .subscribe();
+    supabase.from("slots").select("time").eq("date", date).then(({ data }) => {
+      setBooked((data || []).map((r) => r.time));
     });
-    return unsub;
   }, [date]);
 
   const isBooked = (t: string) => booked.includes(t);
@@ -319,37 +324,27 @@ function Reservation() {
     setError("");
     setSending(true);
 
-    try {
-      const slotId = `${date}_${time}`;
-      await Promise.all([
-        runTransaction(db, async (transaction) => {
-          const ref = doc(db, "slots", slotId);
-          const snap = await transaction.get(ref);
-          if (snap.exists()) throw new Error("ocupado");
-          transaction.set(ref, {
-            date, time, name, phone, persons, note,
-            createdAt: new Date().toISOString(),
-          });
-        }),
-        new Promise((r) => setTimeout(r, 800)),
-      ]);
+    const { error: insertErr } = await supabase.from("slots").insert([
+      { date, time, name, phone, persons, note, created_at: new Date().toISOString() },
+    ]);
 
-      const cleanPhone = phone.replace(/[^0-9]/g, "");
-      const waNumber = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
-      const text = `🍽️ Reserva confirmada en Dichoso\n\n${name}, su mesa está lista:\n📅 ${date}\n⏰ ${time}\n👥 ${persons} personas${note ? `\n📝 ${note}` : ""}\n\n📍 Av. de los Descubrimientos, 11, Mairena\n📞 664 24 32 80\n\n¡Gracias por confiar en nosotros!`;
-      window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
-
+    if (insertErr) {
       setSending(false);
-      setDone(true);
-    } catch (err: unknown) {
-      setSending(false);
-      const msg = err instanceof Error ? err.message : "";
-      if (msg === "ocupado") {
+      if (insertErr.code === "23505") {
         setError("Este horario acaba de ser reservado por otra persona.");
       } else {
-        setError(msg || "Error al reservar. ¿Has creado la base de datos en Firestore?");
+        setError(insertErr.message);
       }
+      return;
     }
+
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    const waNumber = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
+    const text = `🍽️ Reserva confirmada en Dichoso\n\n${name}, su mesa está lista:\n📅 ${date}\n⏰ ${time}\n👥 ${persons} personas${note ? `\n📝 ${note}` : ""}\n\n📍 Av. de los Descubrimientos, 11, Mairena\n📞 664 24 32 80\n\n¡Gracias por confiar en nosotros!`;
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
+
+    setSending(false);
+    setDone(true);
   };
 
   const times = [
