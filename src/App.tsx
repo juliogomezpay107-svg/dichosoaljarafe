@@ -408,7 +408,7 @@ function Reservation() {
             </div>
             <div className="form-group">
               <label className="form-label">Teléfono</label>
-              <input type="tel" className="form-input" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="600 000 000" />
+              <input type="tel" className="form-input" required value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, "").slice(0, 15))} placeholder="600000000" inputMode="numeric" />
             </div>
           </div>
           <div className="form-group">
