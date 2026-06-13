@@ -297,7 +297,7 @@ function Reservation() {
   const [phone, setPhone] = useState("");
   const [persons, setPersons] = useState("");
   const [note, setNote] = useState("");
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<{ date: string; time: string; name: string; phone: string; persons: string; note: string } | null>(null);
   const [booked, setBooked] = useState<string[]>([]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -339,7 +339,7 @@ function Reservation() {
     }
 
     setSending(false);
-    setDone(true);
+    setDone({ date, time, name, phone, persons, note });
   };
 
   const times = [
@@ -355,7 +355,15 @@ function Reservation() {
           <h2 className="section-title">Reserve su mesa</h2>
           <div className="reservation-done">
             <span className="reservation-done-icon">✓</span>
-            <p className="reservation-done-text">Reserva confirmada.<br />Recibirás un WhatsApp con la información.</p>
+            <p className="reservation-done-text">Reserva confirmada</p>
+            <div className="reservation-detail">
+              <p><strong>Fecha:</strong> {done.date}</p>
+              <p><strong>Hora:</strong> {done.time}</p>
+              <p><strong>Personas:</strong> {done.persons}</p>
+              <p><strong>Nombre:</strong> {done.name}</p>
+              <p><strong>Teléfono:</strong> {done.phone}</p>
+              {done.note && <p><strong>Comentarios:</strong> {done.note}</p>}
+            </div>
             <a href={`tel:+34${PHONE}`} className="btn btn-gold">Llamar · 664 24 32 80</a>
           </div>
         </div>
