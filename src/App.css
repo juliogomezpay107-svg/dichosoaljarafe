@@ -331,15 +331,8 @@
 .form-input option { background: var(--bg-card); }
 .form-textarea { height: 48px; min-height: 48px; resize: none; padding-top: 0.75rem; }
 .form-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
-.form-msg {
-  padding: 0.75rem 1rem;
-  border-radius: 0;
-  font-size: 0.85rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-.form-msg.ok { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
-.form-msg.err { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.btn-ok { background: #22c55e; color: #fff; border-color: #22c55e; }
+.btn-disabled { background: var(--border); color: var(--muted); border-color: var(--border); }
 
 /* ── Location ────────────────────────────────── */
 .location-grid {

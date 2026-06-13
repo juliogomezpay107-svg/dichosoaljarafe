@@ -296,7 +296,7 @@ function Reservation() {
   const [phone, setPhone] = useState("");
   const [persons, setPersons] = useState("");
   const [note, setNote] = useState("");
-  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [done, setDone] = useState(false);
 
   const [booked, setBooked] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem("dichoso_bookings") || "[]"); }
@@ -305,27 +305,23 @@ function Reservation() {
 
   const isBooked = (t: string) => booked.includes(`${date}|${t}`);
 
-  useEffect(() => {
-    if (!msg) return;
-    const t = setTimeout(() => setMsg(null), 5000);
-    return () => clearTimeout(t);
-  }, [msg]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const key = `${date}|${time}`;
-    if (booked.includes(key)) {
-      setMsg({ text: "Esa hora ya está reservada. Elige otra.", ok: false });
-      return;
-    }
+    if (booked.includes(key)) return;
+
     const updated = [...booked, key];
     setBooked(updated);
     localStorage.setItem("dichoso_bookings", JSON.stringify(updated));
 
-    const text = `Hola ${name}, su reserva en Dichoso ha sido confirmada:\n📅 ${date}\n⏰ ${time}\n👥 ${persons} personas${note ? `\n📝 ${note}` : ""}\n\nGracias por confiar en nosotros.`;
-    window.open(`https://wa.me/34${PHONE}?text=${encodeURIComponent(text)}`, "_blank");
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    const waNumber = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
 
-    setMsg({ text: "Reserva confirmada. Te enviamos los detalles por WhatsApp.", ok: true });
+    const text = `🍽️ Reserva confirmada en Dichoso\n\n${name}, su mesa está lista:\n📅 ${date}\n⏰ ${time}\n👥 ${persons} personas${note ? `\n📝 ${note}` : ""}\n\n📍 Av. de los Descubrimientos, 11, Mairena\n📞 664 24 32 80\n\n¡Gracias por confiar en nosotros!`;
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
+
+    setDone(true);
+    setTimeout(() => setDone(false), 2500);
     setDate(""); setTime(""); setName(""); setPhone(""); setPersons(""); setNote("");
   };
 
@@ -340,8 +336,6 @@ function Reservation() {
         <p className="section-eyebrow">Reservas</p>
         <h2 className="section-title">Reserve su mesa</h2>
 
-        {msg && <div className={`form-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</div>}
-
         <form className="form" onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
@@ -354,11 +348,11 @@ function Reservation() {
                 <option value="" disabled>Seleccionar</option>
                 {times.map((g) => (
                   <optgroup key={g.group} label={g.group}>
-                    {g.slots.map((t) => (
-                      <option key={t} value={t} disabled={!!date && isBooked(t)}>
-                        {t}{date && isBooked(t) ? " — reservada" : ""}
-                      </option>
-                    ))}
+                    {g.slots.map((t) => {
+                      const taken = !!date && isBooked(t);
+                      if (taken) return null;
+                      return <option key={t} value={t}>{t}</option>;
+                    })}
                   </optgroup>
                 ))}
               </select>
@@ -388,8 +382,8 @@ function Reservation() {
             <textarea className="form-input form-textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Alergias, celebraciones, preferencias..." />
           </div>
           <div className="form-actions">
-            <button type="submit" className="btn btn-gold btn-lg" disabled={!date || !time || !name || !phone || !persons}>
-              Confirmar reserva
+            <button type="submit" className={`btn btn-lg ${done ? "btn-ok" : (time && isBooked(time) ? "btn-disabled" : "btn-gold")}`} disabled={!date || !time || !name || !phone || !persons || isBooked(time)}>
+              {done ? "✓ Reservado" : (time && isBooked(time) ? "No disponible" : "Confirmar reserva")}
             </button>
             <a href={`tel:+34${PHONE}`} className="btn btn-outline btn-lg">
               Llamar · 664 24 32 80
