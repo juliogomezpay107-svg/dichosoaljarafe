@@ -347,7 +347,7 @@ function Reservation() {
       if (msg === "ocupado") {
         setError("Este horario acaba de ser reservado por otra persona.");
       } else {
-        setError("Error al reservar. Inténtalo de nuevo o llámanos.");
+        setError(msg || "Error al reservar. ¿Has creado la base de datos en Firestore?");
       }
     }
   };
