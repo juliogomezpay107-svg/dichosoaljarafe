@@ -304,7 +304,7 @@ function Reservation() {
 
   useEffect(() => {
     if (!date) { setBooked([]); return; }
-    supabase
+    const channel = supabase
       .channel("slots-" + date)
       .on("postgres_changes", { event: "*", schema: "public", table: "slots", filter: `date=eq.${date}` }, () => {
         supabase.from("slots").select("time").eq("date", date).then(({ data }) => {
@@ -315,6 +315,7 @@ function Reservation() {
     supabase.from("slots").select("time").eq("date", date).then(({ data }) => {
       setBooked((data || []).map((r) => r.time));
     });
+    return () => { channel.unsubscribe(); };
   }, [date]);
 
   const isBooked = (t: string) => booked.includes(t);
