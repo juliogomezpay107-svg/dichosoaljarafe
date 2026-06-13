@@ -321,15 +321,18 @@ function Reservation() {
 
     try {
       const slotId = `${date}_${time}`;
-      await runTransaction(db, async (transaction) => {
-        const ref = doc(db, "slots", slotId);
-        const snap = await transaction.get(ref);
-        if (snap.exists()) throw new Error("ocupado");
-        transaction.set(ref, {
-          date, time, name, phone, persons, note,
-          createdAt: new Date().toISOString(),
-        });
-      });
+      await Promise.all([
+        runTransaction(db, async (transaction) => {
+          const ref = doc(db, "slots", slotId);
+          const snap = await transaction.get(ref);
+          if (snap.exists()) throw new Error("ocupado");
+          transaction.set(ref, {
+            date, time, name, phone, persons, note,
+            createdAt: new Date().toISOString(),
+          });
+        }),
+        new Promise((r) => setTimeout(r, 800)),
+      ]);
 
       const cleanPhone = phone.replace(/[^0-9]/g, "");
       const waNumber = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
