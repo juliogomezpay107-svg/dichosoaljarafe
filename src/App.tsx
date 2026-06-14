@@ -318,7 +318,10 @@ function Reservation() {
     return () => { channel.unsubscribe(); };
   }, [date]);
 
-  const isBooked = (t: string) => booked.includes(t);
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const isPast = (t: string) => date === today && t < `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+  const isBooked = (t: string) => booked.includes(t) || isPast(t);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -384,7 +387,7 @@ function Reservation() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Fecha</label>
-              <input type="date" className="form-input" required value={date} onChange={(e) => { setDate(e.target.value); setTime(""); }} />
+              <input type="date" className="form-input" required min={today} value={date} onChange={(e) => { setDate(e.target.value); setTime(""); }} />
             </div>
             <div className="form-group">
               <label className="form-label">Hora</label>
