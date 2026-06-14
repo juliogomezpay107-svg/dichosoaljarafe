@@ -387,7 +387,7 @@ function Reservation() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Fecha</label>
-              <input type="date" className="form-input" required min={today} value={date} onChange={(e) => { setDate(e.target.value); setTime(""); }} />
+              <input type="date" className="form-input" required value={date} onChange={(e) => { const v = e.target.value; if (v < today) return; setDate(v); setTime(""); }} />
             </div>
             <div className="form-group">
               <label className="form-label">Hora</label>
